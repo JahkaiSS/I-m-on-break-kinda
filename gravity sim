@@ -1,0 +1,151 @@
+">>> gravity simulator <<<"
+
+import pygame, math
+SCREEN_SIZE = (1920,1080)
+
+screen = pygame.display.set_mode(SCREEN_SIZE,pygame.RESIZABLE)
+pygame.display.set_caption("Gravity Simulator")
+pygame.mixer.init()
+
+bg_song_name = "nintendo hype" + ".wav"
+current_folder = "sandboxPack"
+collision_sound_name = "new_sound" + ".wav"
+BG_MUSIC = pygame.mixer.Sound(f"{current_folder}/{bg_song_name}")
+BG_MUSIC.set_volume(0.5)
+COLLISION_SOUND = pygame.mixer.Sound(f"{current_folder}/{collision_sound_name}")
+COLLISION_SOUND.set_volume(1)
+BG_MUSIC.play()
+clock = pygame.time.Clock()
+print(pygame.font.get_init())
+rubber_ball = pygame.rect.Rect(200,0,50,50)
+
+def handle_events():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+        if event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
+            pygame.quit()
+            exit()
+
+def reset_position(game_piece: pygame.rect.Rect, respawn_point: tuple):
+    game_piece.center = respawn_point
+
+def move_game_piece(game_piece: pygame.rect.Rect, direction: str, 
+                    velocity: int = 0):
+    match direction:
+        case "up":  
+            game_piece.top += velocity * -1
+        case "down":
+            game_piece.bottom += velocity
+        case "right":
+            game_piece.right += velocity
+        case "left":
+            game_piece.left += velocity * -1
+        case "stop":
+            velocity = 0
+
+
+
+
+def main(hasFuel):
+    RESPAWN_POINT = (200,50)
+    BOTTOM = screen.get_height()
+    local_velocity = 1
+    time_factor = 0
+    time_rate = 1
+    time_cooldown = 50
+    BG_COLOR = "GREEN"
+    ball_color = "BLUE"
+    moving_right = False
+    moving_left = True
+    moving_up = False
+    moving_down = True
+    bounce_count = 0
+    crazy_number = 2147483648
+
+    while hasFuel:
+        time_factor += time_rate
+        # print(time_factor)
+        handle_events()
+        screen.fill(BG_COLOR)
+        
+        pygame.draw.rect(screen, ball_color, rubber_ball, 0, 30)
+        
+        if moving_down:
+            move_game_piece(rubber_ball, "down", local_velocity)
+        if moving_right:
+            move_game_piece(rubber_ball, "right", local_velocity)
+        if moving_up:
+            move_game_piece(rubber_ball, "up", local_velocity)
+        if moving_left:
+            move_game_piece(rubber_ball, "left", local_velocity)
+
+        if moving_down and rubber_ball.bottom >= screen.get_height():
+            moving_down = False
+            time_factor = 0
+            moving_up = True
+        if moving_up and rubber_ball.top <= 0:
+            moving_up = False
+            time_factor = 0
+            moving_down = True
+        
+            
+        if moving_left and rubber_ball.left <= 0:
+            moving_left = False
+            time_factor = 0
+            moving_right = True
+
+        if moving_right and rubber_ball.right >= screen.get_width():
+            moving_right = False
+            time_factor = 0
+            moving_left = True
+
+        if time_factor < time_cooldown:
+            ball_color = "orange"
+            rubber_ball.width = 60
+            rubber_ball.height = 60
+        else:
+            ball_color = "BLUE"
+            rubber_ball.width = 50
+            rubber_ball.height = 50
+        
+        if time_factor == 0:
+            bounce_count += 1
+            COLLISION_SOUND.play()
+            if local_velocity < crazy_number:
+                local_velocity *= 2
+            else:
+                local_velocity = 1
+                reset_position(rubber_ball,(200,50))
+            print(local_velocity)
+       
+        
+        
+        
+            
+        
+
+        # print(bounce_count)
+        pygame.display.update()
+        clock.tick(144)
+
+
+
+
+
+
+main(True)
+
+print(pygame.get_init())
+
+
+count = 0
+n = 4
+output = 0
+for i in range(n):
+    print(i ** 2)
+for i in range(n - 1, 0, -1):
+    print(i ** 2)
+    
+
